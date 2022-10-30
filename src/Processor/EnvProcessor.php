@@ -11,10 +11,6 @@
 namespace Swoft\Processor;
 
 use Dotenv\Dotenv;
-use Dotenv\Environment\Adapter\EnvConstAdapter;
-use Dotenv\Environment\Adapter\PutenvAdapter;
-use Dotenv\Environment\Adapter\ServerConstAdapter;
-use Dotenv\Environment\DotenvFactory;
 use Swoft;
 use Swoft\Log\Helper\CLog;
 use Swoft\Stdlib\Helper\Str;
@@ -54,17 +50,10 @@ class EnvProcessor extends Processor
             return $this->application->afterEnv();
         }
 
-        // Load env info
-        $factory = new DotenvFactory([
-            new EnvConstAdapter,
-            new PutenvAdapter,
-            new ServerConstAdapter
-        ]);
-
         $path = dirname($envFile);
         $name = basename($envFile);
 
-        Dotenv::create($path, $name, $factory)->overload();
+        Dotenv::createUnsafeMutable($path, $name)->load();
         CLog::info('Env file(%s) is loaded', $envFile);
 
         return $this->application->afterEnv();
